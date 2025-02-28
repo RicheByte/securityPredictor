@@ -251,6 +251,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 For questions, issues, or contributions, please contact:
 
-- **Project Lead:** [roothacker](mailto:your.)
+- **Project Lead:** [RicheByte](mailto:your.)
 - **GitHub:** [github.com/your-org/distributed-pentest-framework](https://github.com/your-org/distributed-pentest-framework)
 
