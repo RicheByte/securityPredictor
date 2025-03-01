@@ -1,256 +1,159 @@
 # enterprise_scan
 
-## Distributed Pentest Framework
+```markdown
+# Distributed Pentest Framework
 
-The Distributed Pentest Framework is a cutting-edge, enterprise-grade offensive security platform designed for large-scale, comprehensive security assessments. It incorporates distributed scanning, machine learning-based anomaly detection, cloud metadata testing, advanced protocol fuzzing, Burp Suite integration, CI/CD pipeline security gates, and compliance automation.
+**Enterprise-grade penetration testing framework with distributed scanning, AI/ML anomaly detection, and compliance validation**
 
-This framework is ideal for Fortune 500 enterprises and government entities, providing robust scanning capabilities and compliance validation—all while supporting horizontal scaling via a Redis task queue system.
-
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Configuration & Deployment Requirements](#configuration--deployment-requirements)
-- [Recommended Improvements](#recommended-improvements)
-- [License](#license)
-- [Contact](#contact)
-
----
+![Pentest Framework Architecture](https://via.placeholder.com/800x400.png?text=Distributed+Pentest+Architecture) *Example architecture diagram*
 
 ## Features
 
-### 1. Distributed Scanning Architecture
-- **Task Queue with Redis:**  
-  Uses a Redis cluster to distribute scanning tasks to multiple worker nodes.
-- **Real-Time Result Aggregation:**  
-  Aggregates scan results via a Redis pub/sub channel, ensuring timely notifications.
+- **Distributed Scanning Cluster**
+  - Redis-based task distribution
+  - Horizontal scaling capabilities
+  - Real-time result aggregation
 
-### 2. ML-Powered Anomaly Detection
-- **Isolation Forest Model:**  
-  Uses scikit-learn’s Isolation Forest for unsupervised anomaly detection.
-- **Real-Time Traffic Analysis:**  
-  Processes HTTP responses to detect anomalous behavior, reducing false positives.
+- **Advanced Detection Capabilities**
+  - ML-powered anomaly detection (Isolation Forest)
+  - WebSocket security testing
+  - Cloud metadata exposure checks
+  - Burp Suite Enterprise integration
 
-### 3. Cloud Security Testing
-- **Metadata Exposure Checks:**  
-  Validates the security posture of cloud metadata services across AWS, GCP, and Azure.
-- **Cloud Storage and Serverless Audits:**  
-  Extensible for additional tests such as storage configuration audits and serverless function security checks.
+- **Compliance Automation**
+  - GDPR/HIPAA/PCI-DSS validation
+  - Automated audit reporting
+  - Policy enforcement hooks
 
-### 4. Burp Suite Integration
-- **Automated Scanning:**  
-  Integrates with Burp Suite Enterprise API to trigger scans and import vulnerability findings.
-- **Result Correlation:**  
-  Maps vulnerabilities from Burp Suite into a consolidated report.
-
-### 5. Advanced Protocol Testing
-- **WebSocket Protocol Analysis:**  
-  Detects potential Cross-Site WebSocket Hijacking and other protocol-level vulnerabilities.
-- **Binary Protocol Fuzzing & Stateful Analysis:**  
-  Framework is extensible to support additional advanced protocol tests.
-
-### 6. CI/CD Pipeline Integration
-- **Security Gates Implementation:**  
-  Integrates with CI/CD pipelines to enforce security tests before deployment.
-- **Automated Build Blocking:**  
-  Fails builds automatically if critical vulnerabilities are detected.
-
-### 7. Compliance Automation
-- **Regulatory Compliance Checks:**  
-  Validates findings against compliance standards such as GDPR, HIPAA, and PCI-DSS.
-- **Automated Control Mapping:**  
-  Generates audit-ready reports with remediation guidance.
-
----
-
-## Architecture
-
-The framework follows a modular architecture designed for scalability and integration:
-
-```
-                   +---------------------+
-                   |  Redis Task Queue   |
-                   +----------+----------+
-                              |
-                  +-----------v-----------+ 
-                  |  Distributed Workers  |
-                  +-----------+-----------+
-                              |
-              +---------------v-----------------+
-              |  Cloud Metadata Service Checker |
-              +---------------+-----------------+
-                              |
-              +---------------v-----------------+
-              | ML-Powered Anomaly Detector    |
-              +---------------+-----------------+
-                              |
-              +---------------v-----------------+
-              | Protocol Fuzzing Engine        |
-              +---------------+-----------------+
-                              |
-              +---------------v-----------------+
-              | Compliance Validation System   |
-              +---------------+-----------------+
-                              |
-              +---------------v-----------------+
-              | CI/CD Pipeline Integration     |
-              +----------------+----------------+
-                               |
-                   +-----------v-----------+
-                   | Security Orchestrator |
-                   +-----------------------+
-```
-
-Each component is designed to work in concert, offering a complete security testing pipeline from task distribution to compliance validation.
-
----
+- **CI/CD Integration**
+  - Security gates for pipelines
+  - Artifact generation (JUnit format)
+  - Build failure automation
 
 ## Installation
 
-### Prerequisites
-- **Python 3.7+**  
-- **Redis Cluster:**  
-  Ensure you have access to a running Redis cluster (or single instance for testing purposes).
-- **Burp Suite Enterprise Edition:**  
-  Properly configured with an API key.
-- **Cloud Credentials:**  
-  Required for metadata testing against AWS, GCP, and Azure.
-- **CI/CD Pipeline Access:**  
-  Integration tokens or access credentials for your CI/CD system.
-- **Compliance Rule Databases:**  
-  Updated regulatory guidelines for GDPR, HIPAA, PCI-DSS, etc.
-
-### Dependencies
-
-Install the required dependencies using `pip`:
+### Requirements
+- Python 3.8+
+- Redis Server 6.2+
+- Burp Suite Enterprise Edition (optional)
 
 ```bash
-pip install redis websockets scikit-learn joblib numpy burp-rest-api cloud-metadata compliance-checker ci-cd-integrations
-```
-
-### Clone the Repository
-
-Clone the repository to your local machine:
-
-```bash
-git clone https://github.com/your-org/distributed-pentest-framework.git
+# Clone repository
+git clone https://github.com/yourusername/distributed-pentest-framework.git
 cd distributed-pentest-framework
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start Redis cluster
+docker-compose up -d redis
 ```
 
----
+## Configuration
+
+1. **Environment Variables**
+```bash
+export BURP_API_KEY="your_burp_enterprise_key"
+export REDIS_HOST="redis-cluster"
+```
+
+2. **Burp Integration**
+- Obtain API key from Burp Suite Enterprise
+- Configure target scope in Burp's UI
+
+3. **Model Training** (Optional)
+```python
+from framework import DistributedPentestFramework
+
+framework = DistributedPentestFramework("example-target")
+framework.train_anomaly_model(your_training_data)
+```
 
 ## Usage
 
-### Running the Framework
+```python
+import asyncio
+from framework import DistributedPentestFramework
 
-To run a comprehensive enterprise scan on a target URL:
+async def main():
+    target = "ws://vulnerable-websocket-server"
+    pentest = DistributedPentestFramework(target)
+    report = await pentest.run_enterprise_scan()
+    
+    with open('security_report.json', 'w') as f:
+        json.dump(report, f)
 
-```bash
-python enterprise_scan.py --target https://example.com
+asyncio.run(main())
 ```
 
-For testing purposes, you may use a WebSocket echo endpoint:
-
-```bash
-python enterprise_scan.py --target ws://echo.websocket.org
+### Sample Report Structure
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "WebSocket Hijacking",
+      "severity": "High",
+      "details": "Detected vulnerable WebSocket response"
+    }
+  ],
+  "compliance": {
+    "GDPR": {"status": "compliant", "failed_checks": []},
+    "PCI-DSS": {"status": "non-compliant", "failed_checks": ["security_patching"]}
+  }
+}
 ```
 
-### Usage Scenarios
+## Modules
 
-- **Distributed Compliance-Focused Scan:**
+### Distributed Scanning
+- Redis message queue for task distribution
+- Web workers for parallel execution
+- Real-time monitoring via Pub/Sub
 
-  ```bash
-  python enterprise_scan.py --compliance gdpr pci-dss
-  ```
+### Machine Learning Integration
+- Anomaly detection model persistence
+- Feature extraction from HTTP responses
+- Unsupervised learning pipeline
 
-- **Cloud Environment Audit:**
+### Cloud Security
+- AWS/GCP/Azure metadata checks
+- Instance metadata service validation
+- Cloud configuration auditing
 
-  ```bash
-  python enterprise_scan.py --cloud aws gcp
-  ```
+## Compliance Engine
+- Automated policy validation
+- Custom standard support
+- Audit-ready reporting
 
-- **CI/CD Pipeline Security Gates:**
-
-  ```bash
-  python enterprise_scan.py --ci jenkins --fail-on critical
-  ```
-
-- **WebSocket Protocol Security Test:**
-
-  ```bash
-  python enterprise_scan.py --protocol websocket
-  ```
-
-### Command-Line Arguments
-
-The framework supports several command-line arguments to tailor your scans:
-- `--target`: Specify the target URL or WebSocket endpoint.
-- `--compliance`: Choose compliance standards (e.g., `gdpr`, `pci-dss`).
-- `--cloud`: Specify cloud providers to test (e.g., `aws`, `gcp`).
-- `--ci`: Integrate with a CI/CD pipeline (e.g., `jenkins`).
-- `--fail-on`: Define vulnerability severity levels that should block the build.
-
-Refer to the help command for more details:
-
-```bash
-python enterprise_scan.py --help
+## CI/CD Pipeline
+```yaml
+# Example GitLab CI Configuration
+security_scan:
+  stage: test
+  script:
+    - python -m framework --target $TARGET_URL
+  artifacts:
+    paths:
+      - security_report.json
+  allow_failure: false
 ```
 
----
+## Contributing
 
-## Configuration & Deployment Requirements
-
-### Redis Configuration
-- Ensure that the Redis host and port are correctly configured in the code.
-- For production deployments, use a Redis cluster to support horizontal scaling.
-
-### Burp Suite Configuration
-- Set the `BURP_API_KEY` environment variable with your Burp Suite Enterprise API key.
-- Confirm that the `BurpApiClient` is properly installed and configured.
-
-### Cloud Credentials
-- Configure your cloud credentials for AWS, GCP, and Azure as required by the `CloudMetadataChecker`.
-
-### CI/CD Integration
-- Ensure your CI/CD pipeline has access to the required tokens and that the `PipelineIntegration` module is configured correctly.
-- Set up mutual TLS authentication and secure credential management as part of your CI/CD environment.
-
----
-
-## Recommended Improvements
-
-1. **Quantum-Safe Cryptography:**  
-   Implement quantum-safe cryptography to secure distributed communications.
-2. **AI-Powered Remediation Engine:**  
-   Add an engine that provides automated remediation suggestions based on detected vulnerabilities.
-3. **Threat Intelligence Integration:**  
-   Integrate with leading threat intelligence platforms for real-time updates.
-4. **Software Bill of Materials (SBOM) Analysis:**  
-   Incorporate SBOM analysis to track third-party dependencies.
-5. **Attack Surface Management:**  
-   Enhance the framework to include comprehensive attack surface analysis.
-6. **Red Team Automation:**  
-   Automate red team exercises for proactive security testing.
-7. **Vulnerability Management System Integration:**  
-   Seamlessly integrate with established vulnerability management systems.
-
----
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/improvement`)
+3. Commit changes (`git commit -am 'Add new feature'`)
+4. Push to branch (`git push origin feature/improvement`)
+5. Open Pull Request
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).  
+Apache 2.0 - See [LICENSE](LICENSE) for details
 
+## Disclaimer
 
----
+This tool should only be used on systems you have explicit permission to test. The developers are not responsible for any unauthorized usage or damage caused by this software.
 
-## Contact
+```
 
-For questions, issues, or contributions, please contact:
-
-- **Project Lead:** [RicheByte](mailto:your.)
-- **GitHub:** [github.com/your-org/distributed-pentest-framework](https://github.com/your-org/distributed-pentest-framework)
-
+*Note: Replace placeholder URLs and repository paths with actual values before use*
